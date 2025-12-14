@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Asset;
 use App\Models\Order;
+use App\Models\Asset;
 use App\Services\OrderMatchingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -63,22 +63,18 @@ class OrderController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $user) {
-                // Lock user for update
                 $user = $user->lockForUpdate()->find($user->id);
 
-                $totalCost = bcmul($request->price, $request->amount, 8);
+                $totalCost = $request->price * $request->amount;
 
                 if ($request->side === 'buy') {
-                    // Check if user has enough balance
-                    if (bccomp($user->balance, $totalCost, 8) < 0) {
+                    if ($user->balance < $totalCost) {
                         throw new \Exception('Insufficient balance');
                     }
 
-                    // Deduct balance
-                    $user->balance = bcsub($user->balance, $totalCost, 8);
+                    $user->balance = $user->balance - $totalCost;
                     $user->save();
                 } else {
-                    // Sell order: lock assets
                     $asset = Asset::firstOrCreate(
                         ['user_id' => $user->id, 'symbol' => $request->symbol],
                         ['amount' => 0, 'locked_amount' => 0]
@@ -86,18 +82,16 @@ class OrderController extends Controller
 
                     $asset = $asset->lockForUpdate()->find($asset->id);
 
-                    $available = bcsub($asset->amount, $asset->locked_amount, 8);
+                    $available = $asset->amount - $asset->locked_amount;
 
-                    if (bccomp($available, $request->amount, 8) < 0) {
+                    if ($available < $request->amount) {
                         throw new \Exception('Insufficient asset amount');
                     }
 
-                    // Lock asset amount
-                    $asset->locked_amount = bcadd($asset->locked_amount, $request->amount, 8);
+                    $asset->locked_amount = $asset->locked_amount + $request->amount;
                     $asset->save();
                 }
 
-                // Create order
                 $order = Order::create([
                     'user_id' => $user->id,
                     'symbol' => $request->symbol,
@@ -110,7 +104,6 @@ class OrderController extends Controller
                 return $order;
             });
 
-            // Try to match order immediately
             $this->matchingService->matchOrder($order);
 
             return response()->json([
@@ -137,18 +130,16 @@ class OrderController extends Controller
                 $lockedUser = $user->lockForUpdate()->find($user->id);
 
                 if ($order->side === 'buy') {
-                    // Refund locked USD
-                    $refund = bcmul($order->price, $order->amount, 8);
-                    $lockedUser->balance = bcadd($lockedUser->balance, $refund, 8);
+                    $refund = $order->price * $order->amount;
+                    $lockedUser->balance = $lockedUser->balance + $refund;
                     $lockedUser->save();
                 } else {
-                    // Release locked assets
                     $asset = Asset::where('user_id', $user->id)
                         ->where('symbol', $order->symbol)
                         ->lockForUpdate()
                         ->firstOrFail();
 
-                    $asset->locked_amount = bcsub($asset->locked_amount, $order->amount, 8);
+                    $asset->locked_amount = $asset->locked_amount - $order->amount;
                     $asset->save();
                 }
 

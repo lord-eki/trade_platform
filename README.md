@@ -2,7 +2,7 @@
 
 A real-time cryptocurrency trading platform built with Laravel and Vue.js, featuring live order matching, real-time updates via Pusher, and robust financial transaction handling.
 
-## 🚀 Features
+##  Features
 
 - **Real-time Order Matching**: Automatic order matching with price-time priority
 - **Live Updates**: WebSocket-based real-time notifications via Pusher
@@ -11,10 +11,10 @@ A real-time cryptocurrency trading platform built with Laravel and Vue.js, featu
 - **Modern UI**: Responsive Vue.js interface with Tailwind CSS
 - **Asset Management**: Multi-asset support (BTC, ETH) with locked amount tracking
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Backend
-- Laravel 11.x (PHP 8.2+)
+- Laravel 12.x (PHP 8.2+)
 - MySQL/PostgreSQL
 - Laravel Sanctum (Authentication)
 - Pusher (Real-time Broadcasting)
@@ -22,28 +22,28 @@ A real-time cryptocurrency trading platform built with Laravel and Vue.js, featu
 
 ### Frontend
 - Vue.js 3.x (Composition API)
-- Tailwind CSS 3.x
+- Tailwind CSS 4.x
 - Axios (HTTP Client)
 - Pinia (State Management)
 - Laravel Echo + Pusher JS
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have installed:
 - PHP >= 8.2
 - Composer
 - Node.js >= 18.x
 - npm or yarn
-- MySQL or PostgreSQL
+- MySQL 
 - Git
 
-## 🔧 Installation
+##  Installation
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/trading-platform.git
-cd trading-platform
+git clone https://github.com/yourusername/trade-platform.git
+cd trade-platform
 ```
 
 ### 2. Backend Setup
@@ -65,15 +65,15 @@ php artisan key:generate
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
-# DB_DATABASE=trading_platform
+# DB_DATABASE=trade_platform
 # DB_USERNAME=root
-# DB_PASSWORD=your_password
+# DB_PASSWORD=
 
 # Configure Pusher credentials in .env
 # BROADCAST_CONNECTION=pusher
-# PUSHER_APP_ID=your_app_id
-# PUSHER_APP_KEY=your_app_key
-# PUSHER_APP_SECRET=your_app_secret
+# PUSHER_APP_ID=app_id
+# PUSHER_APP_KEY=app_key
+# PUSHER_APP_SECRET=app_secret
 # PUSHER_APP_CLUSTER=mt1
 
 # Run migrations
@@ -110,7 +110,7 @@ npm run dev
 # Frontend will run on http://localhost:5173
 ```
 
-## 🗄 Database Schema
+## Database Schema
 
 ### Users Table
 - `id`: Primary key
@@ -135,7 +135,7 @@ npm run dev
 - `amount`: Order amount (decimal 20,8)
 - `status`: Order status (1=open, 2=filled, 3=cancelled)
 
-### Trades Table (Optional)
+### Trades Table
 - `id`: Primary key
 - `buy_order_id`: Foreign key to orders
 - `sell_order_id`: Foreign key to orders
@@ -147,7 +147,7 @@ npm run dev
 - `total`: Total transaction value
 - `commission`: Commission charged (1.5%)
 
-## 🔑 Default Test Accounts
+##  Default Test Accounts
 
 After running `php artisan db:seed`, you can use:
 
@@ -156,7 +156,7 @@ After running `php artisan db:seed`, you can use:
 | user1@test.com | password | $100,000 | None |
 | user2@test.com | password | $100,000 | 1 BTC, 10 ETH |
 
-## 🎯 API Endpoints
+##  API Endpoints
 
 ### Authentication
 - `POST /api/register` - Register new user
@@ -170,7 +170,7 @@ After running `php artisan db:seed`, you can use:
 - `POST /api/orders/{id}/cancel` - Cancel order (authenticated)
 - `POST /api/orders/match` - Trigger order matching (authenticated)
 
-## 🔄 Order Matching Logic
+## Order Matching Logic
 
 ### Buy Order Flow
 1. Verify user has sufficient USD balance
@@ -197,7 +197,7 @@ After running `php artisan db:seed`, you can use:
 8. Create trade record
 9. Broadcast real-time events to both parties
 
-## 🔒 Security Features
+## Security Features
 
 - **Database Locking**: Prevents race conditions using `lockForUpdate()`
 - **Atomic Transactions**: All financial operations wrapped in database transactions
@@ -206,7 +206,7 @@ After running `php artisan db:seed`, you can use:
 - **Private Channels**: User-specific WebSocket channels for sensitive data
 - **CSRF Protection**: Built-in Laravel CSRF protection
 
-## 🧪 Testing
+## Testing
 
 ### Manual Testing Steps
 
@@ -241,7 +241,7 @@ User A: Cancel order
 Result: $950 returned to balance
 ```
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### Backend Issues
 
@@ -276,42 +276,7 @@ php artisan migrate:fresh
 # Ensure broadcasting/auth endpoint is accessible
 ```
 
-## 📁 Project Structure
-
-```
-trading-platform/
-├── backend/                 # Laravel API
-│   ├── app/
-│   │   ├── Events/         # Broadcast events
-│   │   ├── Http/
-│   │   │   └── Controllers/
-│   │   ├── Models/
-│   │   └── Services/       # Business logic
-│   ├── database/
-│   │   ├── migrations/
-│   │   └── seeders/
-│   ├── routes/
-│   │   ├── api.php
-│   │   └── channels.php
-│   └── .env.example
-│
-├── frontend/               # Vue.js Application
-│   ├── src/
-│   │   ├── assets/
-│   │   ├── components/
-│   │   ├── router/
-│   │   ├── services/      # API & Echo services
-│   │   ├── stores/        # Pinia stores
-│   │   ├── views/
-│   │   ├── App.vue
-│   │   └── main.js
-│   └── package.json
-│
-├── .gitignore
-└── README.md
-```
-
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment (Production)
 
@@ -330,9 +295,6 @@ php artisan view:cache
 
 # Run migrations
 php artisan migrate --force
-
-# Set up queue worker for async jobs (optional)
-php artisan queue:work --daemon
 ```
 
 ### Frontend Deployment
@@ -345,11 +307,11 @@ npm run build
 # Configure web server to serve index.html for all routes
 ```
 
-## 📝 Environment Variables
+## Environment Variables
 
 ### Backend (.env)
 ```env
-APP_NAME="Trading Platform"
+APP_NAME="Trade_Platform"
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
@@ -358,7 +320,7 @@ APP_URL=http://localhost:8000
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=trading_platform
+DB_DATABASE=trade_platform
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -375,33 +337,6 @@ SESSION_DOMAIN=localhost
 ### Frontend (.env)
 ```env
 VITE_API_URL=http://localhost:8000/api
-VITE_PUSHER_KEY=your_pusher_key
+VITE_PUSHER_KEY=pusher_key
 VITE_PUSHER_CLUSTER=mt1
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👥 Authors
-
-- Your Name - Initial work
-
-## 🙏 Acknowledgments
-
-- Laravel framework team
-- Vue.js core team
-- Pusher for real-time infrastructure
-- Tailwind CSS for styling utilities
-
-## 📞 Support
-
-For support, email support@tradingplatform.com or open an issue in the repository.
